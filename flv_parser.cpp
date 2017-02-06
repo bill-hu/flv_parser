@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 const uint8_t kTagTypeAudio = 8;
 const uint8_t kTagTypeVideo = 9;
@@ -46,12 +47,13 @@ uint32_t readBigEndian(const uint8_t *data, uint32_t length)
 double stringToDouble(const uint8_t *hex, uint32_t length)
 {
     double result = 0.0;
-    char hexStr[length * 2];
-    memset(hexStr, 0, sizeof(hexStr));
+    char * hexStr = new  char[length * 2+1];
+	*hexStr = 0;
     for (uint32_t i = 0; i < length; i++) {
         sprintf(hexStr + i * 2, "%02x", hex[i]);
     }
     sscanf(hexStr, "%llx", &result);
+	delete hexStr;
     return result;
 }
 
@@ -59,6 +61,7 @@ void parseScripteTag(const uint8_t *tagData, uint32_t dataSize)
 {
     uint32_t offset = 0;
     uint8_t amfType = tagData[offset++];
+
     if (amfType == 0x02) {
         // AMF0 - onMetaData
         // 1Byte - AMF type, always 0x02
@@ -429,15 +432,22 @@ int parseFlv(const char *path)
 
 int main(int argc, char *argv[])
 {
-    logFp = fopen("./info.log", "wb");
-    audioFp = fopen("./flv_audio.mp3", "wb");
-    videoFp = fopen("./flv_video.flv", "wb");
+	if (argc == 2) {
+		logFp = fopen("./info.log", "wb");
+		audioFp = fopen("./flv_audio.mp3", "wb");
 
-    parseFlv("./cuc_ieschool.flv");
+		videoFp = fopen("./flv_video.flv", "wb");
 
-    fclose(logFp);
-    fclose(audioFp);
-    fclose(videoFp);
+		parseFlv(argv[1]);
+		fclose(logFp);
+		fclose(audioFp);
+		fclose(videoFp);
+	}
+	else
+	{
+		printf("useage: %s flvfile", argv[0]);
+	}
 
+	
     return 0;
 }
