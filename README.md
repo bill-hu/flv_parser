@@ -1,6 +1,9 @@
 # flv_parser
+
 a simple flv parser imported from https://github.com/longlibj8355/flv_parser
+
 usage: flv_parser flvname
+
 outuput: info.log , a text file with flv file info,flv_video.flv and flv_audio.mp3
 
 example of info.log:
